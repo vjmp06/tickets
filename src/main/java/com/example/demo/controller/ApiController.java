@@ -23,8 +23,8 @@ public class ApiController {
     public ScheduleDTO processarTickets(@RequestBody String ticketsTexto) {
         var tickets = gerarTickets(ticketsTexto);
         var scheduleDTO = new ScheduleDTO();
-        scheduleDTO.setTicketsA(ticketsA(tickets));
-        scheduleDTO.setTicketsB(ticketsB(tickets));
+        scheduleDTO.setTicketsA(ticketsPorTipo(tickets, Tipo.A));
+        scheduleDTO.setTicketsB(ticketsPorTipo(tickets, Tipo.B));
         return scheduleDTO;
     }
 
@@ -56,11 +56,13 @@ public class ApiController {
         throw new RuntimeException("Falha ao serializar ticket");
     }
 
-    private List<Ticket> ticketsA(List<Ticket> tickets) {
-        return tickets.stream().filter(ticket -> ticket instanceof TicketA).collect(Collectors.toList());
-    }
-
-    private List<Ticket> ticketsB(List<Ticket> tickets) {
-        return tickets.stream().filter(ticket -> ticket instanceof TicketB).collect(Collectors.toList());
+    private List<Ticket> ticketsPorTipo(List<Ticket> tickets, Tipo tipo) {
+        switch (tipo) {
+            case A:
+                return tickets.stream().filter(ticket -> ticket instanceof TicketA).collect(Collectors.toList());
+            case B:
+                return tickets.stream().filter(ticket -> ticket instanceof TicketB).collect(Collectors.toList());
+        }
+        throw new RuntimeException("Tipo invalido");
     }
 }
